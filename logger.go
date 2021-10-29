@@ -41,7 +41,7 @@ func (logger *Logger) LogMode(level gormlog.LogLevel) gormlog.Interface {
 
 // Info log
 func (logger *Logger) Info(ctx context.Context, msg string, args ...interface{}) {
-	if logger.logLevel > gormlog.Info {
+	if logger.logLevel < gormlog.Info {
 		return
 	}
 	logger.logger.Info(msg, args)
@@ -49,7 +49,7 @@ func (logger *Logger) Info(ctx context.Context, msg string, args ...interface{})
 
 // Warn log
 func (logger *Logger) Warn(ctx context.Context, msg string, args ...interface{}) {
-	if logger.logLevel > gormlog.Warn {
+	if logger.logLevel < gormlog.Warn {
 		return
 	}
 	logger.logger.Warn(msg, args)
@@ -57,7 +57,7 @@ func (logger *Logger) Warn(ctx context.Context, msg string, args ...interface{})
 
 // Error log
 func (logger *Logger) Error(ctx context.Context, msg string, args ...interface{}) {
-	if logger.logLevel > gormlog.Error {
+	if logger.logLevel < gormlog.Error {
 		return
 	}
 	logger.logger.Error(msg, args)
@@ -65,6 +65,9 @@ func (logger *Logger) Error(ctx context.Context, msg string, args ...interface{}
 
 // Trace log
 func (logger *Logger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), err error) {
+	if logger.logLevel < gormlog.Info {
+		return
+	}
 	var sql string
 	var affected int64
 	var errMsg string
@@ -77,7 +80,7 @@ func (logger *Logger) Trace(ctx context.Context, begin time.Time, fc func() (sql
 		errMsg = err.Error()
 	}
 
-	logger.logger.Errorw(errMsg,
+	logger.logger.Debugw(errMsg,
 		"begin", begin.UTC(),
 		"sql", sql,
 		"rows_affected", affected)
