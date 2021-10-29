@@ -30,7 +30,7 @@ func NewLogger() *Logger {
 
 // Sync call defer logger.Sync() to empty the buffer
 func (logger *Logger) Sync() {
-	logger.Sync()
+	logger.logger.Sync()
 }
 
 // LogMode sets the log level
