@@ -65,7 +65,13 @@ func (logger *Logger) Error(ctx context.Context, msg string, args ...interface{}
 
 // Trace log
 func (logger *Logger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), err error) {
-	sql, affected := fc()
+	var sql string
+	var affected int64
+
+	if fc != nil {
+		sql, affected = fc()
+	}
+
 	logger.logger.Errorw(err.Error(),
 		"begin", begin.UTC(),
 		"sql", sql,
