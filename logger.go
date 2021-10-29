@@ -81,7 +81,7 @@ func (logger *Logger) Trace(ctx context.Context, begin time.Time, fc func() (sql
 		errMsg = err.Error()
 	}
 
-	logger.logger.Debugw(errMsg,
+	logger.logger.Infow(errMsg,
 		"begin", begin.UTC(),
 		"sql", sql,
 		"rows_affected", affected)
