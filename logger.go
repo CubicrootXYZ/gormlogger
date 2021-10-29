@@ -35,7 +35,7 @@ func (logger *Logger) Sync() {
 
 // LogMode sets the log level
 func (logger *Logger) LogMode(level gormlog.LogLevel) gormlog.Interface {
-	logger.logger.Debugf("Setting log level to %d", level)
+	logger.logger.Infof("Setting log level to %d", level)
 	logger.logLevel = level
 	return logger
 }
