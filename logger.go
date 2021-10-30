@@ -15,8 +15,16 @@ type Logger struct {
 }
 
 // NewLogger makes a new logger instance
-func NewLogger() *Logger {
-	log, err := zap.NewProduction(zap.AddCallerSkip(1))
+func NewLogger(debug bool) *Logger {
+	var err error
+	var log *zap.Logger
+
+	if debug {
+		log, err = zap.NewDevelopment(zap.AddCallerSkip(1))
+	} else {
+		log, err = zap.NewProduction(zap.AddCallerSkip(1))
+
+	}
 	if err != nil {
 		panic(err)
 	}
@@ -35,40 +43,26 @@ func (logger *Logger) Sync() {
 
 // LogMode sets the log level
 func (logger *Logger) LogMode(level gormlog.LogLevel) gormlog.Interface {
-	logger.logger.Infof("Setting log level to %d", level)
-	logger.logLevel = level
 	return logger
 }
 
 // Info log
 func (logger *Logger) Info(ctx context.Context, msg string, args ...interface{}) {
-	if logger.logLevel < gormlog.Info {
-		return
-	}
-	logger.logger.Info(msg, args)
+	logger.logger.Debug(msg, args)
 }
 
 // Warn log
 func (logger *Logger) Warn(ctx context.Context, msg string, args ...interface{}) {
-	if logger.logLevel < gormlog.Warn {
-		return
-	}
 	logger.logger.Warn(msg, args)
 }
 
 // Error log
 func (logger *Logger) Error(ctx context.Context, msg string, args ...interface{}) {
-	if logger.logLevel < gormlog.Error {
-		return
-	}
 	logger.logger.Error(msg, args)
 }
 
 // Trace log
 func (logger *Logger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), err error) {
-	if logger.logLevel < gormlog.Info {
-		return
-	}
 	var sql string
 	var affected int64
 	var errMsg string
@@ -81,7 +75,7 @@ func (logger *Logger) Trace(ctx context.Context, begin time.Time, fc func() (sql
 		errMsg = err.Error()
 	}
 
-	logger.logger.Infow(errMsg,
+	logger.logger.Debugw(errMsg,
 		"begin", begin.UTC(),
 		"sql", sql,
 		"rows_affected", affected)
